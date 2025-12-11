@@ -78,10 +78,59 @@ Recomenda-se manter revisões periódicas de consumo, utilizar o AWS Cost Explor
 ## 4. Anexos
 
 ### **Diagrama de Arquitetura (opcional)**
-Coloque aqui a imagem do seu diagrama ou o link para ela.
+```mermaid
+flowchart LR
+
+    subgraph Cliente["Farmácia – Aplicações e Usuários"]
+        APP[Aplicações Web / Mobile]
+    end
+
+    subgraph S3["Amazon S3\n(Armazenamento + Lifecycle)"]
+        STORAGE[(Bucket S3)]
+        IA[(S3 Standard-IA)]
+        GLACIER[(S3 Glacier)]
+    end
+
+    subgraph Lambda["AWS Lambda\n(Processamento Serverless)"]
+        LAMBDA1((Funções Lambda))
+    end
+
+    subgraph RDS["Amazon RDS Serverless"]
+        DB[(Banco de Dados Serverless)]
+        REPLICA[(Read Replica)]
+    end
+
+    APP -->|Upload/Download| STORAGE
+    STORAGE --> IA
+    STORAGE --> GLACIER
+
+    APP -->|Eventos/Processos| LAMBDA1
+    LAMBDA1 --> DB
+
+    DB --> REPLICA
+    APP -->|Consultas de Leitura| REPLICA
+```
 
 ### **Link do Repositório GitHub**
-`https://github.com/seuusuario/seurepositorio`
+`https://github.com/norwalneto/-reducao-dos-custos-em-farm-cias-com-AWS.git`
 
 ### **Capturas de Tela das Configurações**
 Recomendação de estrutura:  
+/screenshots
+├── cloudwatch.png
+├── lifecycles3.png
+
+
+### **Tabela Comparativa de Custos (Antes x Depois)**
+
+| Serviço | Antes (mensal) | Depois (mensal) | Economia |
+|--------|----------------|-----------------|----------|
+| Armazenamento | Alto (EC2 + local) | Baixo (S3 + IA/Glacier) | Até 70% |
+| Processamento | EC2 ocioso | Lambda sob demanda | 80%–90% |
+| Banco de Dados | Full-time ativo | Serverless + replicas | 30%–55% |
+
+---
+
+**Assinatura:**  
+Norwal  
+Responsável pelo Projeto  
